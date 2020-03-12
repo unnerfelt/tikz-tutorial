@@ -1,0 +1,230 @@
+\documentclass{beamer}
+
+\usepackage[mode=buildnew]{standalone}
+%\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.16}
+\usepackage{listings}
+
+%% Ugly workaround to get lstlinebgrd to work.
+\makeatletter
+\let\old@lstKV@SwitchCases\lstKV@SwitchCases
+\def\lstKV@SwitchCases#1#2#3{}
+\makeatother
+\usepackage{lstlinebgrd}
+\makeatletter
+\let\lstKV@SwitchCases\old@lstKV@SwitchCases
+
+\lst@Key{numbers}{none}{%
+    \def\lst@PlaceNumber{\lst@linebgrd}%
+    \lstKV@SwitchCases{#1}%
+    {none:\\%
+     left:\def\lst@PlaceNumber{\llap{\normalfont
+                \lst@numberstyle{\thelstnumber}\kern\lst@numbersep}\lst@linebgrd}\\%
+     right:\def\lst@PlaceNumber{\rlap{\normalfont
+                \kern\linewidth \kern\lst@numbersep
+                \lst@numberstyle{\thelstnumber}}\lst@linebgrd}%
+    }{\PackageError{Listings}{Numbers #1 unknown}\@ehc}}
+\makeatother
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btIfInRange{number}{range list}{TRUE}{FALSE}
+%
+% Test in int number <number> is element of a (comma separated) list of ranges
+% (such as: {1,3-5,7,10-12,14}) and processes <TRUE> or <FALSE> respectively
+
+\newcount\bt@rangea
+\newcount\bt@rangeb
+
+\newcommand\btIfInRange[2]{%
+    \global\let\bt@inrange\@secondoftwo%
+    \edef\bt@rangelist{#2}%
+    \foreach \range in \bt@rangelist {%
+        \afterassignment\bt@getrangeb%
+        \bt@rangea=0\range\relax%
+        \pgfmathtruncatemacro\result{ ( #1 >= \bt@rangea) && (#1 <= \bt@rangeb) }%
+        \ifnum\result=1\relax%
+            \breakforeach%
+            \global\let\bt@inrange\@firstoftwo%
+        \fi%
+    }%
+    \bt@inrange%
+}
+\newcommand\bt@getrangeb{%
+    \@ifnextchar\relax%
+        {\bt@rangeb=\bt@rangea}%
+        {\@getrangeb}%
+}
+\def\@getrangeb-#1\relax{%
+    \ifx\relax#1\relax%
+        \bt@rangeb=100000%   \maxdimen is too large for pgfmath
+    \else%
+        \bt@rangeb=#1\relax%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \btLstHL<overlay spec>{range list}
+%
+% TODO BUG: \btLstHL commands can not yet be accumulated if more than one overlay spec match.
+% 
+\newcommand<>{\btLstHL}[1]{%
+  \only#2{\btIfInRange{\value{lstnumber}}{#1}{\color{orange!30}\def\lst@linebgrdcmd{\color@block}}{\def\lst@linebgrdcmd####1####2####3{}}}%
+}%
+\makeatother
+
+
+\usefonttheme{serif}
+
+\title{TikZ/pgfplots tutorial}
+\author{Lucas Unnerfelt}
+\date{March 2020}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section*{Outline}
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\lstset{
+  rangeprefix=\%\ ,
+  includerangemarker=false
+}
+
+\section{Basic plotting}
+\newcommand{\codesplit}[2]{
+\begin{columns}[T]
+\begin{column}{.5\textwidth}
+  \lstinputlisting[linerange=start-end,
+    language=TeX, frame=single, basicstyle=\tiny, #2]{#1.tex}
+\end{column}%
+\begin{column}{.48\textwidth}
+  \includestandalone[width=\textwidth]{#1}
+\end{column}%
+\end{columns}
+}
+
+\begin{frame}
+  Relevant packages
+  \begin{enumerate}
+  \item<1-> tikz
+  \item<2-> pgfplots
+  \item<3-> pgfplotstable
+  \end{enumerate}
+  \only<4->{
+  All pacakges have extensive documentation on ctan.org
+  Pgfplots and pgfplotstable have reasonably large documentations.
+  TikZ has more than $1000$ pages. Lots of code and examples.}
+\end{frame}
+
+\begin{frame}
+  Including packages, configuration.
+  \codesplit{example1}{linebackgroundcolor={\btLstHL<1>{4-5}, \btLstHL<2>{8-19}, \btLstHL<3>{9-18}, \btLstHL<4>{10-17}}}
+\end{frame}
+
+\begin{frame}
+  Example of data file.
+  \lstinputlisting[frame=single, basicstyle=\tiny]{data.txt}
+  Saved as data.txt.
+  It is possible to reconfigure pgfplots(table) to load a lot of different text formats. But I have found it most simple to reformat in MATLAB/Python instead of in \LaTeX and TikZ.
+\end{frame}
+
+\begin{frame}
+  Save in correct format using Python/numpy
+
+  \lstinputlisting[frame=single, basicstyle=\tiny]{save.py}
+  MATLAB
+  \lstinputlisting[frame=single, basicstyle=\tiny]{save_data.m}
+  
+\end{frame}
+
+\begin{frame}
+  Loading data file
+  \codesplit{example2}{linebackgroundcolor={\btLstHL<1>{9}, \btLstHL<2>{14}}}
+\end{frame}
+
+\begin{frame}
+  Axis settings
+  \codesplit{example3}{linebackgroundcolor={\btLstHL<1>{13-16}, \btLstHL<2>{18, 21, 24}}}
+\end{frame}
+
+\begin{frame}
+  Legends
+  \codesplit{example4}{linebackgroundcolor={\btLstHL<1>{15-16}}}
+\end{frame}
+
+\begin{frame}
+  Legends
+  \codesplit{example5}{linebackgroundcolor={\btLstHL<1>{17}}}
+\end{frame}
+
+\begin{frame}
+  Multiple plots with labels.
+  \codesplit{example6}{linebackgroundcolor={\btLstHL<1>{}, \btLstHL<2>{14-15, 21-22}}}
+\end{frame}
+
+\section{Contour plots}
+\begin{frame}
+  Contour plots
+  \begin{itemize}
+  \item Should be simple (and is for non-filled contour plots)
+  \item Built in pgfplots functionality for filled contour plots only works in Acrobat Reader
+  \item Therefore we need workarounds
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  Data we will be working with
+  \lstinputlisting[frame=single, basicstyle=\tiny]{save_data_contour.m}
+\end{frame}
+
+\begin{frame}
+  3D plot.
+  \codesplit{example7}{}
+\end{frame}
+
+\begin{frame}
+  Contour plot.
+  \codesplit{example8}{}
+\end{frame}
+
+\begin{frame}
+  Using MATLAB
+  \lstinputlisting[frame=single, basicstyle=\tiny]{export_contour_plot.m}
+  \codesplit{example9}{}
+\end{frame}
+
+\begin{frame}
+  Using matlab, filled
+  \lstinputlisting[frame=single, basicstyle=\tiny]{export_contour_plot_filled.m}
+  \codesplit{example10}{}
+\end{frame}
+
+\begin{frame}
+  Colorbar
+  \lstinputlisting[linerange=start-end,frame=single, basicstyle=\tiny]{export_contour_plot_filled_cb.m}
+  \codesplit{example11}{}
+\end{frame}
+
+\section{Misc}
+\begin{frame}
+  Illustrations (inkscape might be a better choice for this)
+  \codesplit{example12}{}
+\end{frame}
+\begin{frame}
+  Speed up compilation
+  \lstinputlisting[frame=single, basicstyle=\tiny]{code.tex}
+\end{frame}
+
+\begin{frame}
+  Documentation for pgfplots, tikz, and even pgfplotstable are really good.
+\end{frame}
+
+\end{document}

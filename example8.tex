@@ -1,0 +1,22 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+% start
+\pgfplotstableread{datac.txt}\data
+
+\begin{tikzpicture}
+  \begin{axis}[
+      view={0}{90}]
+    \addplot3 [
+      contour gnuplot={
+        number=10
+      },
+      mesh/rows=15, mesh/cols=15]
+    table {\data};
+  \end{axis}
+\end{tikzpicture}
+% end
+\end{document}

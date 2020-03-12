@@ -1,0 +1,18 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+% start
+\begin{tikzpicture}
+  \begin{axis}
+    \addplot [
+      contour prepared,
+      contour prepared format=matlab
+    ]
+    table {exportcontour.txt};
+  \end{axis}
+\end{tikzpicture}
+% end
+\end{document}

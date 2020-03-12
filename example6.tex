@@ -1,0 +1,30 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+% start
+\pgfplotstableread{data.txt}\data
+
+\begin{tikzpicture}
+  \matrix{
+  \begin{axis}
+    \node at (rel axis cs:0.8, 0.1)
+          {(a)};
+
+    \addplot [black]
+    table [x=x, y=f(x)] {\data};
+  \end{axis}\\
+  \begin{axis}
+    \node at (rel axis cs:0.1, 0.8)
+          {(b)};
+
+    \addplot [black]
+    table [x=x, y=g(x)] {\data};
+  \end{axis}\\
+  };
+\end{tikzpicture}
+% end
+\end{document}

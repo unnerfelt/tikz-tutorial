@@ -1,0 +1,32 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+% start
+\pgfplotstableread{data.txt}\data
+
+\begin{tikzpicture}
+  \begin{axis}
+    [xlabel={$x$}, ylabel={$f(x)$},
+      ymode=log,
+      legend entries={
+        $x^2$,$x^3$,$x^4$},
+      legend pos=outer north east,
+    ]
+
+    \addplot [blue]
+    table [x=x, y=f(x)] {\data};
+
+    \addplot [red, dashed]
+    table [x=x, y=g(x)] {\data};
+
+    \addplot [black, dotted]
+    table [x=x, y=h(x)] {\data};
+
+  \end{axis}
+\end{tikzpicture}
+% end
+\end{document}

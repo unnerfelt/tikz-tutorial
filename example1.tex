@@ -1,0 +1,21 @@
+% start
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{axis}
+    \addplot [black, only marks]
+    table [x=x, y=f(x)] {
+      x f(x)
+      0 0
+      1 1
+      2 4
+      3 9
+    };
+  \end{axis}
+\end{tikzpicture}
+\end{document}
+% end

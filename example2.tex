@@ -1,0 +1,18 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+% start
+\pgfplotstableread{data.txt}\data
+
+\begin{tikzpicture}
+  \begin{axis}
+    \addplot [black, only marks]
+    table [x=x, y=f(x)] {\data};
+  \end{axis}
+\end{tikzpicture}
+% end
+\end{document}

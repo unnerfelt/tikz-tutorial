@@ -1,0 +1,38 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+% start
+\begin{tikzpicture}
+  \begin{axis} [
+      enlargelimits=false,
+      axis on top=true,
+      colormap={mymap}{
+rgb=(0.242200,0.150400,0.660300) 
+% ...
+rgb=(0.976900,0.983900,0.080500)},
+      colorbar,
+      point meta min=-6.0419,
+      point meta max=6
+    ]
+    \addplot graphics
+             [xmin=-3,xmax=3,
+               ymin=-3,ymax=3]
+             {exportedfig_t.png};
+    \addplot [
+        contour prepared = {
+          draw color = black,
+          labels = false
+        },
+      contour prepared format=matlab,
+      dashed
+    ]
+    table {exportcontour.txt};
+  \end{axis}
+\end{tikzpicture}
+% end
+
+\end{document}

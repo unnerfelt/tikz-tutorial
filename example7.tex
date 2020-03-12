@@ -1,0 +1,19 @@
+\documentclass{standalone}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+% start
+\pgfplotstableread{datac.txt}\data
+
+\begin{tikzpicture}
+  \begin{axis}[view={45}{70}]
+    \addplot3 [
+      surf,
+      z buffer=sort]
+    table {\data};
+  \end{axis}
+\end{tikzpicture}
+% end
+\end{document}
